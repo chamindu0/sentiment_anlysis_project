@@ -1,6 +1,10 @@
 from flask import  Flask,render_template,request,redirect
-from helper import preprocessing,vectorizer,get_prediction 
+from helper import preprocessing,vectorizer,get_prediction
+from logger import logging 
+
 app = Flask(__name__)
+
+logging.info('Flask server started')
 data =dict()
 reviews =[]
 positive= 0
@@ -11,15 +15,23 @@ def index():
     data['reviews']=reviews
     data['positive']=positive
     data['negative']=negative
+
+    logging.info('============ open homepage ============')
+
+
     return render_template('index.html',data=data)
 
 @app.route("/",methods =['post'])
 def my_post():
     text =request.form['text']
-    preprocessed_txt=preprocessing(text)
-    vectorized_txt=vectorizer(preprocessed_txt)
-    prediction =get_prediction(vectorized_txt)
 
+    logging.info(f'Text: {text}')
+    preprocessed_txt=preprocessing(text)
+    logging.info(f'Preprocessed_Text: {preprocessed_txt}')
+    vectorized_txt=vectorizer(preprocessed_txt)
+    logging.info(f'Vectorized_text: {vectorized_txt}')
+    prediction =get_prediction(vectorized_txt)
+    logging.info(f'Prediction: {prediction}')
     if prediction == 'Negative':
         global negative
         negative += 1
